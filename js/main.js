@@ -1,5 +1,25 @@
 var Nakama = {};
-Nakama.configs = {};
+
+var c=0;
+Nakama.configs = {
+  GAME_WIDTH  :640,
+  GAME_HEIGHT :960,
+  MIN_WIDTH   :320,
+  MIN_HEIGHT  :480,
+  MAX_HEIGHT  :960 ,
+  PLAYER1_POS : {
+    x :200,
+    y :800
+  },
+  PLAYER2_POS : {
+    x :400,
+    y :800
+  },
+  ENEMY1_POS :  {
+    x: 340,
+    y :100,
+  }
+};
 
 window.onload = function(){
   Nakama.game = new Phaser.Game(640,960,Phaser.AUTO,'',
@@ -32,69 +52,74 @@ var create = function(){
   Nakama.game.physics.startSystem(Phaser.Physics.ARCADE);
   Nakama.keyboard = Nakama.game.input.keyboard;
   Nakama.game.add.sprite(0,0,'background');
-  Nakama.player =Nakama.game.add.sprite(200,200,'assets',"Spaceship1-Player.png");
+
+  Nakama.players= [];
+  Nakama.players.push(
+    new ShipController(
+      Nakama.configs.PLAYER1_POS.x,
+      Nakama.configs.PLAYER1_POS.y,
+      "Spaceship1-Player.png",
+      {
+        up: Phaser.Keyboard.UP,
+        down: Phaser.Keyboard.DOWN,
+        left: Phaser.Keyboard.LEFT,
+        right: Phaser.Keyboard.RIGHT,
+        fire : Phaser.Keyboard.ENTER
+      }
+    )
+
+  );
+  Nakama.players.push(
+    new ShipController(
+      Nakama.configs.PLAYER2_POS.x,
+      Nakama.configs.PLAYER2_POS.y,
+      "Spaceship1-Partner.png",
+      {
+        up: Phaser.Keyboard.W,
+        down: Phaser.Keyboard.S,
+        left: Phaser.Keyboard.A,
+        right: Phaser.Keyboard.D,
+        fire : Phaser.Keyboard.SPACEBAR
+      }
+    )
+  );
+
+  Nakama.enemies= [];
+  Nakama.enemies.push(
+    new EnemiesController(
+      Nakama.configs.ENEMY1_POS.x,
+      Nakama.configs.ENEMY1_POS.y,
+      "EnemyType3.png",
+      {
+
+      }
+    )
+  );
+
 
 }
 
 // update game state each frame
-var update = function(){
-if(Nakama.keyboard.isDown(Phaser.Keyboard.UP)){
-  if(Nakama.player.position.y==0){
-    Nakama.player.position.y=0;
-  }else{
-  Nakama.player.position.y-=10;}
-if(Nakama.keyboard.isDown(Phaser.Keyboard.LEFT)){
-  if(Nakama.player.position.x==0){
-    Nakama.player.position.x=0;
-  }else{
-    Nakama.player.position.x -=10;}}
-if(Nakama.keyboard.isDown(Phaser.Keyboard.RIGHT)){
-  if(Nakama.player.position.x==560){
-    Nakama.player.position.x=560;
-  }else{
-     Nakama.player.position.x +=10;
-   }
- }
-}
+  var update = function(){
 
-else if(Nakama.keyboard.isDown(Phaser.Keyboard.DOWN)){
-  if(Nakama.player.position.y==890){
-    Nakama.player.position.y=890;
-  }else{
-  Nakama.player.position.y +=10;}
-
-  if(Nakama.keyboard.isDown(Phaser.Keyboard.LEFT)){
-    if(Nakama.player.position.x==0){
-      Nakama.player.position.x=0;
-    }else{
-    Nakama.player.position.x -=10;
+  Nakama.players.forEach(function(ship){
+     ship.update();
   }
-}
-  if(Nakama.keyboard.isDown(Phaser.Keyboard.RIGHT)){
-    if(Nakama.player.position.x==560){
-      Nakama.player.position.x=560;
-    }else{
+);
 
-        Nakama.player.position.x +=10;
-  }
-}
-}
-else if(Nakama.keyboard.isDown(Phaser.Keyboard.LEFT)){
-  if(Nakama.player.position.x==0){
-    Nakama.player.position.x=0;
-  }else{
-
-  Nakama.player.position.x -=10;}
-}
-else if(Nakama.keyboard.isDown(Phaser.Keyboard.RIGHT)){
-  if(Nakama.player.position.x==560){
-    Nakama.player.position.x=560;
-  }else{
-
-  Nakama.player.position.x +=10;}
-}
+  Nakama.enemies.forEach(function(enemy){
+    var r = Math.random()*6;
+    c=(c+r)%160;
+    if(c<80){
+           enemy.update1();  //left
+          }
+        else{
+           enemy.update2(); //right
+          }
+      }
+  );
 
 }
 
-// before camera render (mostly for debug)
+// before camera render
 var render = function(){}
