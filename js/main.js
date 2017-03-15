@@ -108,15 +108,8 @@ var create = function(){
 );
 
   Nakama.enemies.forEach(function(enemy){
-    var r = Math.random()*6;
-    c=(c+r)%160;
-    if(c<80){
-           enemy.update1();  //left
-          }
-        else{
-           enemy.update2(); //right
-          }
-      }
+  enemy.update();  
+  }
   );
 
 }
